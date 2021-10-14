@@ -2,6 +2,9 @@ pipeline {
   agent none
   environment {
     FAVORITE_COLOR = 'RED'
+  }  
+  triggers {
+    eventTrigger simpleMatch('hello-api-deploy-event')
   }
   stages {
     stage('Test') {
@@ -32,18 +35,22 @@ pipeline {
             echo "TODO - build and push image"
           }
         }
-          stage('Deploy') {
+        stage('Deploy') {
           agent any
           environment {
             FAVORITE_COLOR = 'BLUE'
             SERVICE_CREDS = credentials('example-service-username-password')
           }
+          options {
+            timeout(time: 10, unit: 'SECONDS') 
+          }
+          input {
+            message "Should we continue with deployment?"
+          }
           steps {
             sh 'echo TODO - deploy to $FAVORITE_COLOR with SERVICE_CREDS: username=$SERVICE_CREDS_USR password=$SERVICE_CREDS_PSW'
           }
         }
-
-
       }
     }
   }
